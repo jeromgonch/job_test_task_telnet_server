@@ -14,6 +14,8 @@ public class Main {
                 telnetConfig.getMaxNumberConnections());
         // start telnet server
         telnetServer.start();
+        // print telnet server status message
+        System.out.println(telnetServer.getStatus());
         // waite while server worked
         telnetServer.doWait(200);
     }
