@@ -14,11 +14,6 @@ public interface TelnetServer {
     boolean isWork();
 
     /**
-     * @return server status string
-     */
-    String getStatus();
-
-    /**
      * send a stop signal to the server
      */
     void sendStop();
