@@ -24,15 +24,19 @@ public class ClientHandler extends Thread {
             PrintWriter writer = new PrintWriter(socket.getOutputStream());
             while (!interrupted()) {
                 String inputLine = reader.readLine();
-                if (inputLine.equals("quit")) {
-                    socket.close();
-                    interrupt();
-                } else if (inputLine.equals("time")) {
-                    writer.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-                    writer.flush();
-                } else if (inputLine.equals("date")) {
-                    writer.println(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
-                    writer.flush();
+                switch (inputLine) {
+                    case "quit":
+                        socket.close();
+                        interrupt();
+                        break;
+                    case "time":
+                        writer.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                        writer.flush();
+                        break;
+                    case "date":
+                        writer.println(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+                        writer.flush();
+                        break;
                 }
             }
         } catch (IOException e) {
@@ -41,7 +45,7 @@ public class ClientHandler extends Thread {
             if (!socket.isClosed()) {
                 try {
                     socket.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
             owner.removeHandler(this);

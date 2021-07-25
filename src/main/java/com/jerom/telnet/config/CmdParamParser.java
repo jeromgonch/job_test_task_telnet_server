@@ -3,9 +3,9 @@ package com.jerom.telnet.config;
 import org.apache.commons.cli.*;
 
 public class CmdParamParser {
-    private Options options = new Options();
-    private CommandLineParser parser = new DefaultParser();
-    private HelpFormatter formatter = new HelpFormatter();
+    private final Options options = new Options();
+    private final CommandLineParser parser = new DefaultParser();
+    private final HelpFormatter formatter = new HelpFormatter();
     private CommandLine cmd;
 
     public void addParsedParam(String parameterName, String parameterShortName, String description) {
