@@ -25,7 +25,7 @@ public class LoggerImplementation implements Logger {
 
     @Override
     public synchronized void out(String message) {
-        System.out.println(message);
+        // System.out.println(message);
         if (file != null) {
             try {
                 FileWriter writer = new FileWriter(file.getPath(), true);

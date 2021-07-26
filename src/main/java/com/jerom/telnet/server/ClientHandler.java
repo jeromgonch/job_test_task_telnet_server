@@ -55,6 +55,10 @@ public class ClientHandler extends Thread {
                         interrupt();
                     }
                 } while ((c != '\n')&&(c != '\r')&&(compare > 0));
+                // clear buffer
+                while (reader.ready()) {
+                    reader.read();
+                }
                 String dreadedLine = inputLine.toString();
                 switch (dreadedLine) {
                     case "quit":
@@ -70,6 +74,10 @@ public class ClientHandler extends Thread {
                         break;
                     case "date":
                         writer.println(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+                        writer.flush();
+                        break;
+                    default:
+                        writer.println("unknown command");
                         writer.flush();
                         break;
                 }
