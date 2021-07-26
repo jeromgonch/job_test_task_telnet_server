@@ -22,10 +22,45 @@ public class ClientHandler extends Thread {
             InputStreamReader input = new InputStreamReader(socket.getInputStream());
             BufferedReader reader = new BufferedReader(input);
             PrintWriter writer = new PrintWriter(socket.getOutputStream());
+            LocalTime curTime = LocalTime.now();
+            int compare = 1;
+            String logMsg = socket.getInetAddress().getHostName() +
+                    " (idle timeout " + Short.valueOf(owner.getSecBeforeDisconnect()) + " sec)";
+            writer.println("You connected to server at " + logMsg);
+            owner.out("Client connected to server at " + logMsg);
+            writer.flush();
             while (!interrupted()) {
-                String inputLine = reader.readLine();
-                switch (inputLine) {
+                StringBuilder inputLine = new StringBuilder();
+                char c = '\n';
+                do {
+                    while (!reader.ready()&&(compare > 0)) {
+                        try {
+                            compare = curTime.plusSeconds(owner.getSecBeforeDisconnect()).compareTo(LocalTime.now());
+                            sleep(10);
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+                    if (reader.ready()) {
+                        curTime = LocalTime.now();
+                        c = (char) reader.read();
+                        if ((c != '\n') && (c != '\r')) {
+                            inputLine.append(c);
+                        }
+                    }
+                    if (compare < 0) {
+                        owner.out("Client " + socket.getInetAddress().getHostName() + " disconnected by timeout");
+                        writer.println("Timeout " + Short.valueOf(owner.getSecBeforeDisconnect()).toString() + " second to disconnect, goodbye.");
+                        writer.flush();
+                        socket.close();
+                        interrupt();
+                    }
+                } while ((c != '\n')&&(c != '\r')&&(compare > 0));
+                String dreadedLine = inputLine.toString();
+                switch (dreadedLine) {
                     case "quit":
+                        owner.out("Client " + socket.getInetAddress().getHostName() + " disconnect by query");
+                        writer.println("Request to disconnect, goodbye.");
+                        writer.flush();
                         socket.close();
                         interrupt();
                         break;
@@ -39,16 +74,20 @@ public class ClientHandler extends Thread {
                         break;
                 }
             }
-        } catch (IOException e) {
-            owner.out(e.getMessage());
+        } catch (IOException ignored) {
         } finally {
-            if (!socket.isClosed()) {
-                try {
-                    socket.close();
-                } catch (IOException ignored) {
-                }
-            }
+            doBreak();
             owner.removeHandler(this);
+        }
+    }
+
+    public void doBreak() {
+        if (!socket.isClosed()) {
+            try {
+                // due to lack of time (needs to be implemented correctly)
+                socket.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 }

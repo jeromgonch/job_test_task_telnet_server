@@ -18,9 +18,10 @@ public interface TelnetServer {
      */
     void sendStop();
 
+
     /**
-     * Waiting for the server to stop
-     * @param millis sets the frequency of checks for "server is work"
+     * waiting for the server to stop after
      */
-    void doWait(long millis);
+    void waitForStopped();
+
 }
